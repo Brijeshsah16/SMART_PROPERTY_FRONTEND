@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="bootstrap.min.css" />
+    <link rel="stylesheet" href="site.css" />
+    <link rel="stylesheet" href="alert.css">
+   
+    <title>Document</title>
+</head>
+<body>
+    <header>
+        <header>
+        
+            <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+                <img src="rent.png" alt="rental logo" width="75" height="70" style="margin: 0px "> 
+                <div class="container" style="margin:10px">
+                    <a class="navbar-brand" asp-area="" href="WelcomeScreen.html">Smart Property</a>
+                    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                            aria-expanded="false" aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                    <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+                        
+                        <ul class="navbar-nav flex-grow-1">
+                            <li class="nav-item" style="line-height:60px;">  
+                                <p id="user" class="text-black me-4" style="width:200px; margin-left: 600px;"></p>   
+                            </li>
+                            <li class="nav-item " style="line-height:60px;">     
+                                    <button id="logout" type="submit" class="btn btn-danger me-4" asp-controller="Login" asp-action="Logout">Logout</button>
+                            </li>  
+                        </ul>
+
+    
+                    </div>
+                </div>
+            </nav>
+        </header>
+    </header>
+
+</div>
+
+<div class="alert" id="mydiv" style="display: none;">
+    <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
+    Date cannot be empty
+  </div>
+
+  <div class="alert" id="sameDate" style="display: none;">
+    <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
+    Booking Date and checkout date cannot be same
+  </div>
+
+  <div class="alert" id="cab" style="display: none;">
+    <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
+      checkout must be grater thank booking date
+  </div>
+
+
+
+<div class="container">
+<div class="form-group">
+   <label for="list">Select Location:  </label>
+    <select id="list" name="customer">
+    
+     </select>
+</div>
+<div class="form-group">
+    <label for="df">Booking From:</label>
+    <input type="date" class="form-control" id="df" />
+</div>
+<div class="form-group">
+    <label for="dt">Booking To:</label>
+    <input type="date" class="form-control" id="dt" />
+</div>
+
+<div class="text-center panel-body">
+    <button type="submit" class="btn btn-sm btn-success" id="MakeBooking" style="width: 200px;height: 50px;">Make Booking</button>
+</div>
+
+</div>
+
+</body>
+
+<script>
+
+if(localStorage.getItem("LoggedIn")=="False")  
+    {
+        location.assign("WelcomeScreen.html");      
+    }
+    
+$("#user").html("Hi "+JSON.parse(localStorage.getItem("UserName"))+"!!!");  
+
+$("#logout").click(function(){
+   localStorage.setItem("LoggedIn","False");  
+   location.assign("WelcomeScreen.html");
+})
+
+MakeList();
+
+$("#MakeBooking").click(function (e) {
+
+        var dfrom = new Date($("#df").val());
+        var dfto = new Date($("#dt").val());
+        
+        if($("#df").val()=="" ||  $("#dt").val()=="")
+        {
+            console.log("enter data");
+            $("#mydiv").css("display","block");
+        }
+        else if($("#df").val()==$("#dt").val())
+        {
+            $("#sameDate").css("display","block");
+        }
+        else if(dfrom>dfto)
+        {
+            $("#cab").css("display","block");   
+        }
+        else {
+        
+        $.ajax({
+            url: "https://localhost:5001/api/Buyer/AddBookings/Buyer_id="+localStorage.getItem("user_id"),
+            headers:{
+            'Content-Type':'application/json;charset=UTF-8',
+            'Access-Control-Allow-Origin':'*',
+            'Access-Control-Allow-Method':'*'},
+           type: "post",
+            contentType: "application/json",
+            data: JSON.stringify({
+                
+                BuyertId: localStorage.getItem("user_id"),
+                PropId: $("#list").val(),
+                DateFrom: $("#df").val(),
+                DateTo: $("#dt").val()
+            
+            }),
+            success: function (result, status, xhr) {
+                //alert("Register successful");
+                window.location.href="ShowBookings.html";
+            },
+            error: function (xhr, status, error) {
+                console.log(xhr)
+                //alert("Seller Id Already Exists");
+            }
+        });
+    }
+    })
+
+function MakeList()
+{
+
+    $.ajax({
+        url: "https://localhost:5001/api/Buyer/getProperty",
+        type: "get",
+        contentType: "application/json",
+        success: function (result, status, xhr) {
+            console.log(result);
+            for (var index = 0; index <= result.length; index++) {
+            $('#list').append('<option value="' + result[index].propertyId + '">' + result[index].pName + '</option>');
+            }
+           
+        },
+        error: function (xhr, status, error) {
+
+        },
+
+    });
+}
+
+
+
+
+
+
+
+</script>
+
+
+</html>

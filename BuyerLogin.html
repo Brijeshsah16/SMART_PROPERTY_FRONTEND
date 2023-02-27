@@ -1,0 +1,137 @@
+,<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="bootstrap.min.css" />
+    <link rel="stylesheet" href="site.css" />
+    <link rel="stylesheet" href="alert.css">
+   
+    <title>Document</title>
+</head>
+<body>
+    <header>
+        <header>
+        
+            <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+                <img src="rent.png" alt="rental logo" width="75" height="70" style="margin: 0px "> 
+                <div class="container" style="margin:10px">
+                    <a class="navbar-brand" asp-area="" href="WelcomeScreen.html">Smart Property</a>
+                    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                            aria-expanded="false" aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                    <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+                        <ul class="navbar-nav flex-grow-1">
+                            
+                            <li class="nav-item" style="margin-left: 750px;">
+                                <a class="nav-link text-dark" href="WelcomeScreen.html"> Register </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" href="WelcomeScreen.html"> Login </a>
+                            </li>
+                            
+                        </ul>
+
+    
+                    </div>
+                </div>
+            </nav>
+        </header>
+    </header>
+    
+    
+       
+        <div class="alert" id="mydiv" style="display: none;">
+            <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
+            UserId Or Password cannot be empty
+          </div>
+
+          
+        <div class="alert" id="inc" style="display: none;">
+            <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
+            Enter correct Credentials
+          </div>
+     
+
+     
+
+    <div class="row" style="margin:auto">
+        <div class="col-md-4" style="margin:auto">
+            <h5 style="margin-left:150px;margin-bottom:25px">Buyer Login</h5>
+            
+            <div class="form-group">
+                <label for ="BuyerId">Enter Your ID</label>
+                <input type="number" id="BuyerId" class="form-control" required placeholder="Enter Id"  >
+            </div>
+
+            <div class="form-group">
+                <label for ="password">Enter Your Password</label>
+                <input type="password" id="password" class="form-control" required placeholder="Enter Password" >
+            </div>
+
+            
+            
+            <div class="text-center panel-body" style="width: 500px;">
+                <button type="submit" class="btn btn-sm btn-success" id="LoginBtn" style="width: 200px; height: 50px; margin-left: -50px;">Login</button>
+            </div>
+        
+
+        </div>
+    
+    </div>
+
+</body>
+</html>
+
+<script>
+    
+   
+
+
+    $("#LoginBtn").click(function (e) {
+        
+        let u_id= $("#BuyerId").val()
+        let pass= $("#password").val()
+
+        if(u_id=="" || pass=="")
+          {
+               console.log("user Id or password cannot be empty");
+               $("#mydiv").css("display","block");
+          }else { 
+        
+        $.ajax({
+            url: "https://localhost:5001/api/Login/LoginAsBuyer/id="+u_id+"&password="+pass,
+            headers:{
+            'Content-Type':'application/json;charset=UTF-8',
+            'Access-Control-Allow-Origin':'*',
+            'Access-Control-Allow-Method':'*'},
+           type: "get",
+            contentType: "application/json",
+            success: function (result, status, xhr) {
+
+               
+                localStorage.setItem("LoggedIn","True");
+                localStorage.setItem("user_id", JSON.stringify(result.buyerId));
+                localStorage.setItem("UserName", JSON.stringify(result.buyerName));
+                console.log(result);
+                location.assign("ShowBookings.html");  
+                
+            },
+            error: function (xhr, status, error) {
+                console.log(xhr.status);
+                $("#inc").css("display","block");
+                
+            }
+        });
+    }
+    });
+
+
+    </script> 

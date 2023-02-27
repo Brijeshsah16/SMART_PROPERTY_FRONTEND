@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="bootstrap.min.css" />
+    <link rel="stylesheet" href="site.css" />
+   
+    <title>Document</title>
+</head>
+<body>
+    <header>
+        <header>
+        
+            <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+                <img src="rent.png" alt="rental logo" width="75" height="70" style="margin: 0px "> 
+                <div class="container" style="margin:10px">
+                    <a class="navbar-brand" asp-area="" href="WelcomeScreen.html">Smart Property</a>
+                    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                            aria-expanded="false" aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                    <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+                        
+                        <ul class="navbar-nav flex-grow-1">
+                            <li class="nav-item" style="line-height:60px;">  
+                                <p id="user" class="text-black me-4" style="width:200px; margin-left: 600px;"></p>   
+                            </li>
+                            <li class="nav-item " style="line-height:60px;">     
+                                    <button id="logout" type="submit" class="btn btn-danger me-4" asp-controller="Login" asp-action="Logout">Logout</button>
+                            </li>  
+                        </ul>
+
+    
+                    </div>
+                </div>
+            </nav>
+        </header>
+    </header>
+
+
+
+
+<div class="container" style="width:auto;">
+
+
+    <script>
+        var loc= "MakeBookings.html?id="+localStorage.getItem("user_id");
+        document.write('<a href="' +loc +' " class="btn btn-success"> MakeBookings </a>' );
+    </script>
+
+<div class="form-group" style="margin-top: 20px; margin-left: 950px;">
+    <input type="number" class="form-control" id="SearchProp" placeholder="Enter transId"  style="width: 140px;"/>
+    <div class="text-center panel-body" style="width: 140px; margin-top: 5px; padding: 0px;">
+        <button type="submit" class="btn btn-sm btn-success" id="Search"  style="width: 140px;">Search</button>
+    </div>
+</div>
+
+<div class="mt-4 text-center">
+<table  class="table table-striped"> 
+       <thead>  
+       <tr>
+        <th class="fs-4 fw-light text-dark">Trans ID</th>  
+        <th class="fs-4 fw-light text-dark">Prop ID</th> 
+        <th class="fs-4 fw-light text-dark">Prop Name</th>    
+        <th class="fs-4 fw-light text-dark">DateFrom:</th>   
+        <th class="fs-4 fw-light text-dark">DateTo</th>
+        <th class="fs-4 fw-light text-dark">Amount Paid:</th>
+        <th class="fs-4 fw-light text-dark">Details</th>  
+        <th class="fs-4 fw-light text-dark">Edit</th>
+        <th class="fs-4 fw-light text-dark">Delete</th>
+       </tr>
+       </thead>
+       <tbody>
+
+       </tbody>
+</table>  
+</div>
+</div>
+</body>
+
+<script>
+
+if(localStorage.getItem("LoggedIn")=="False")  
+    {
+        location.assign("WelcomeScreen.html");      
+    }
+    
+$("#user").html("Hi "+JSON.parse(localStorage.getItem("UserName"))+"!!!");  
+
+$("#logout").click(function(){
+   localStorage.setItem("LoggedIn","False");  
+   location.assign("WelcomeScreen.html");
+})
+ShowProperties();  
+
+function ShowProperties() {
+    $("table tbody").html("");
+    $.ajax({
+        url: "https://localhost:5001/api/Buyer/ShowYourBookings/id="+localStorage.getItem("user_id"),  
+        type: "get",
+        headers:{
+    'Content-Type':'application/json;charset=UTF-8',
+    'Access-Control-Allow-Origin':'*',
+    'Access-Control-Allow-Method':'*'},
+        contentType: "application/json",
+        success: function (result, status, xhr) {
+            var prop_name;
+           
+            $.each(result, function (index, value) {
+                
+
+                $.ajax({
+                        url: "https://localhost:5001/api/Seller/Details/prop_id="+value["propId"],
+                        type: "get",
+                        contentType: "application/json",
+                        success: function (result, status, xhr) {
+                          prop_name=result.pName;
+                          //console.log(value["dateFrom"]-value["dateTo"]);
+                          var datef= new Date(value["dateFrom"]).getTime();
+                          var datet= new Date(value["dateTo"]).getTime();
+                          var d= new Date(value["dateFrom"]).getDate();
+                            //console.log(datet.getTime());
+                            var numdays=(datet-datef)/86400000;
+                            var amt = numdays* result.rentPd;
+                          console.log(numdays);
+
+                          $("tbody").append($("<tr>"));
+                            appendElement = $("tbody tr").last();
+                            appendElement.append($("<td>").html(value["transId"]));
+                            appendElement.append($("<td>").html(value["propId"]));   
+                            appendElement.append($("<td>").html(prop_name)); 
+                            appendElement.append($("<td>").html(value["dateFrom"]));
+                            appendElement.append($("<td>").html(value["dateTo"]));
+                                appendElement.append($("<td>").html(amt));    
+                            appendElement.append($("<td>").html("<a href=\"DetailsTrans.html?id=" + value["transId"] + "\"><button class=\"btn btn-success\">Details</button></a>"));  
+                            appendElement.append($("<td>").html("<a href=\"UpdateTrans.html?id=" + value["transId"] + "\"><button class=\"btn btn-warning text-white\">Update</button></a>"));  
+                            appendElement.append($("<td>").html("<a href=\"DeleteTrans.html?id=" +value["transId"] + "\"><button class=\"btn btn-danger\">Delete</button></a>"));  
+                        },
+                        error: function (xhr, status, error) {
+                        //alert(error);
+                        console.log(xhr)
+                        }
+                        });
+
+                 console.log(prop_name);   
+                        
+               
+            });
+        },
+        error: function (xhr, status, error) {
+            alert("Error");
+            console.log(xhr)
+        }
+    });
+
+}
+
+$("#Search").click(function(){
+   // alert($('#SearchProp').val());
+    localStorage.setItem("Keyword_trans", $('#SearchProp').val());
+    location.assign("SearchTrans.html");
+})
+
+
+
+</script>
+
+
+</html>

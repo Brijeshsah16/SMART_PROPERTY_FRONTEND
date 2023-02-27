@@ -1,0 +1,133 @@
+,<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="bootstrap.min.css" />
+    <link rel="stylesheet" href="site.css" />
+    <link rel="stylesheet" href="alert.css">
+   
+    <title>Document</title>
+</head>
+<body>
+    <header>
+        <header>
+        
+            <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+                <img src="rent.png" alt="rental logo" width="75" height="70" style="margin: 0px "> 
+                <div class="container" style="margin:10px">
+                    <a class="navbar-brand" asp-area="" href="WelcomeScreen.html">Smart Property</a>
+                    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                            aria-expanded="false" aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                    <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+                        <ul class="navbar-nav flex-grow-1">
+                            
+                            <li class="nav-item" style="margin-left: 750px;">
+                                <a class="nav-link text-dark" href="WelcomeScreen.html"> Register </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" href="WelcomeScreen.html"> Login </a>
+                            </li>
+                            
+                        </ul>
+
+    
+                    </div>
+                </div>
+            </nav>
+        </header>
+    </header>
+    
+    <div class="alert" id="empty" style="display: none;">
+        <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
+        Detatils cannot be empty
+      </div>
+
+      
+    <div class="alert" id="uniquesid" style="display: none;">
+        <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
+        Seller ID already exists 
+      </div>
+
+
+      <div class="alert" id="negative" style="display: none;">
+        <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
+        balance cannot be negative
+      </div>
+
+    <div class="row" style="margin:auto">
+        <div class="col-md-4" style="margin:auto">
+            <h5 style="margin-left:25px;margin-bottom:25px">Register Your self as Seller</h5>
+            
+            <div class="form-group">
+                <label for ="SellerId">SellerId:</label>
+                <input type="number" id="SellerId" class="form-control" required >
+            </div>
+
+            <div class="form-group">
+                <label for ="SellerName">SellerName:</label>
+                <input type="text" id="SellerName" class="form-control" required>
+            </div>
+
+            <div class="form-group">
+                <label for ="SellerPassword">SellerPassword:</label>
+                <input type="password" id="SellerPassword" class="form-control" required>
+            
+            <div class="text-center panel-body">
+                <button type="submit" class="btn btn-sm btn-success" id="RegisterBtn">Register yourself</button>
+            </div>
+        
+
+        </div>
+    
+    </div>
+</body>
+</html>
+
+<script>
+    
+   
+
+
+    $("#RegisterBtn").click(function (e) {
+        
+        
+        if( $("#SellerId").val()==""||$("#SellerName").val()==""|| $("#SellerPassword").val()==""){
+            $("#empty").css("display","block");
+        }
+        else{
+        $.ajax({
+            url: "https://localhost:5001/api/Login/RegisterAsSeller",
+            headers:{
+            'Content-Type':'application/json;charset=UTF-8',
+            'Access-Control-Allow-Origin':'*',
+            'Access-Control-Allow-Method':'*'},
+           type: "post",
+            contentType: "application/json",
+            data: JSON.stringify({
+                SellerId: $("#SellerId").val(),
+                SellerName: $("#SellerName").val(),
+                SellerPassword: $("#SellerPassword").val(),
+            
+            }),
+            success: function (result, status, xhr) {
+                alert("Register successful");
+                window.location.href="WelcomeScreen.html";
+            },
+            error: function (xhr, status, error) {
+                console.log(xhr)
+               // alert("Seller Id Already Exists");
+               $("#uniquesid").css("display","block");
+            }
+        });
+    }
+    })
+    
+    </script> 

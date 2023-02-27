@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="bootstrap.min.css" />
+    <link rel="stylesheet" href="site.css" />
+   
+    <title>Document</title>
+</head>
+<body>
+    <header>
+        <header>
+        
+            <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+                <img src="rent.png" alt="rental logo" width="75" height="70" style="margin: 0px "> 
+                <div class="container" style="margin:10px">
+                    <a class="navbar-brand" asp-area="" href="WelcomeScreen.html">Smart Property</a>
+                    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                            aria-expanded="false" aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                    <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+                        
+                        <ul class="navbar-nav flex-grow-1">
+                            <li class="nav-item" style="line-height:60px;">  
+                                <p id="user" class="text-black me-4" style="width:200px; margin-left: 600px;"></p>   
+                            </li>
+                            <li class="nav-item " style="line-height:60px;">     
+                                    <button id="logout" type="submit" class="btn btn-danger me-4" asp-controller="Login" asp-action="Logout">Logout</button>
+                            </li>  
+                        </ul>
+
+    
+                    </div>
+                </div>
+            </nav>
+        </header>
+    </header>
+
+
+
+</div>
+
+<div class="container" style="width:auto;">
+    <script>
+        var loc= "PropertyCreate.html?id="+localStorage.getItem("user_id");
+        document.write('<a href="' +loc +' " class="btn btn-success">List Your property </a>' );
+    </script>
+
+<div class="form-group" style="margin-top: 20px; margin-left: 950px;">
+    <label for="SearchProp">Search Property</label>
+    <input type="text" class="form-control" id="SearchProp" placeholder="Enter Property" style="width: 200px;"/>
+    <div class="text-center panel-body" style="width: 200px; margin-top: 5px; padding: 0px;">
+        <button type="submit" class="btn btn-sm btn-success" id="Search"  style="width: 200px;">Search</button>
+    </div>
+</div>
+
+<div class="mt-4 text-center">
+<table  class="table table-striped"> 
+       <thead>  
+       <tr>
+        <th class="fs-4 fw-light text-dark">Property id</th>  
+        <th class="fs-4 fw-light text-dark">property name</th>     
+        <th class="fs-4 fw-light text-dark">Location</th>   
+        <th class="fs-4 fw-light text-dark">Rent per day</th>
+        <th class="fs-4 fw-light text-dark">Details</th>  
+        <th class="fs-4 fw-light text-dark">Edit</th>
+        <th class="fs-4 fw-light text-dark">Delete</th>
+       </tr>
+       </thead>
+       <tbody>
+
+       </tbody>
+</table>  
+</div>
+</div>
+</body>
+
+<script>
+
+if(localStorage.getItem("LoggedIn")=="False")  
+    {
+        location.assign("WelcomeScreen.html");      
+    }
+    
+$("#user").html("Hi "+JSON.parse(localStorage.getItem("UserName"))+"!!!");  
+
+$("#logout").click(function(){
+   localStorage.setItem("LoggedIn","False");  
+   location.assign("WelcomeScreen.html");
+})
+ShowProperties();  
+
+function ShowProperties() {
+    $("table tbody").html("");
+    $.ajax({
+        url: "https://localhost:5001/api/Seller/showProperties/seller_id="+localStorage.getItem("user_id"),  
+        type: "get",
+        headers:{
+    'Content-Type':'application/json;charset=UTF-8',
+    'Access-Control-Allow-Origin':'*',
+    'Access-Control-Allow-Method':'*'},
+        contentType: "application/json",
+        success: function (result, status, xhr) {
+
+            $.each(result, function (index, value) {
+                $("tbody").append($("<tr>"));
+                appendElement = $("tbody tr").last();
+                appendElement.append($("<td>").html(value["propertyId"]));
+                appendElement.append($("<td>").html(value["pName"]));   
+                appendElement.append($("<td>").html(value["loc"]));
+                appendElement.append($("<td>").html(value["rentPd"]));
+                appendElement.append($("<td>").html("<a href=\"Details.html?id=" + value["propertyId"] + "\"><button class=\"btn btn-info text-white\">Details</button></a>"));  
+                appendElement.append($("<td>").html("<a href=\"Update.html?id=" + value["propertyId"] + "\"><button class=\"btn btn-warning text-white\">Update</button></a>"));  
+                appendElement.append($("<td>").html("<a href=\"Delete.html?id=" +value["propertyId"] + "\"><button class=\"btn btn-danger\">Delete</button></a>"));  
+            });
+        },
+        error: function (xhr, status, error) {
+            alert("Error");
+            console.log(xhr)
+        }
+    });
+
+}
+
+$("#Search").click(function(){
+   // alert($('#SearchProp').val());
+    localStorage.setItem("Keyword", $('#SearchProp').val());
+    location.assign("SearchProperties.html");
+})
+
+
+
+</script>
+
+
+</html>

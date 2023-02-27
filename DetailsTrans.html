@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="bootstrap.min.css" />
+    <link rel="stylesheet" href="site.css" />
+   
+    <title>Document</title>
+</head>
+<body>
+    <head>
+        
+        
+            <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+                <img src="rent.png" alt="rental logo" width="75" height="70" style="margin: 0px "> 
+                <div class="container" style="margin:10px">
+                    <a class="navbar-brand" asp-area="" href="WelcomeScreen.html">Smart Property</a>
+                    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                            aria-expanded="false" aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                    <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+                        
+                        <ul class="navbar-nav flex-grow-1">
+                            <li class="nav-item" style="line-height:60px;">  
+                                <p id="user" class="text-black me-4" style="width:200px; margin-left: 600px;"></p>   
+                            </li>
+                            <li class="nav-item " style="line-height:60px;">     
+                                    <button id="logout" type="submit" class="btn btn-danger me-4" asp-controller="Login" asp-action="Logout">Logout</button>
+                            </li>  
+                        </ul>
+
+    
+                    </div>
+                </div>
+            </nav>
+        
+    </head>
+
+    <h4 id="tid" class="text-black me-4" style=" margin-left: 600px;"></p> 
+    <h4 id="bid" class="text-black me-4" style=" margin-left: 600px;"></p> 
+        <h4 id="pid" class="text-black me-4" style=" margin-left: 600px;"></p> 
+            <h4 id="df" class="text-black me-4" style=" margin-left: 600px;"></p> 
+                <h4 id="dt" class="text-black me-4" style=" margin-left: 600px;"></p> 
+    
+    
+   
+
+</body>
+
+
+
+<script>
+
+    if(localStorage.getItem("LoggedIn")=="False")  
+        {
+            location.assign("WelcomeScreen.html");      
+        }
+        
+    $("#user").html("Hi "+JSON.parse(localStorage.getItem("UserName"))+"!!!");  
+    
+    $("#logout").click(function(){
+       localStorage.setItem("LoggedIn","False");  
+       location.assign("WelcomeScreen.html");
+    })
+    
+    
+    ShowDetails();  
+    
+    function ShowDetails() {
+        let params = (new URL(document.location)).searchParams;
+        let id = params.get("id");  
+        $.ajax({
+            url: "https://localhost:5001/api/Buyer/Search/Tran_id="+id,  
+            type: "get",
+            headers:{
+        'Content-Type':'application/json;charset=UTF-8',
+        'Access-Control-Allow-Origin':'*',
+        'Access-Control-Allow-Method':'*'},
+            contentType: "application/json",
+            success: function (result, status, xhr) {
+                   console.log(result[0].transId);
+                $("#tid").html("Transcation id: "+result[0].transId); 
+                $("#bid").html("Buyer id: "+result[0].buyertId);
+                $("#pid").html("property id: "+result[0].propId);
+                $("#df").html("from day: "+result[0].dateFrom); 
+                $("#dt").html("to day: "+result[0].dateTo); 
+            },
+            error: function (xhr, status, error) {
+                console.log(xhr);
+
+            }
+        });
+    }
+</script>
+
+
+
+</html>

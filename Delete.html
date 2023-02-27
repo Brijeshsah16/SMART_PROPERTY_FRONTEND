@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
+    <link rel="stylesheet" href="bootstrap.min.css" />
+    <link rel="stylesheet" href="site.css" />
+   
+    <title>Document</title>
+</head>
+<body>
+    <header>
+        <header>
+        
+            <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+                <img src="rent.png" alt="rental logo" width="75" height="70" style="margin: 0px "> 
+                <div class="container" style="margin:10px">
+                    <a class="navbar-brand" asp-area="" href="WelcomeScreen.html">Smart Property</a>
+                    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                            aria-expanded="false" aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                    <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+                        
+                        <ul class="navbar-nav flex-grow-1">
+                            <li class="nav-item" style="line-height:60px;">  
+                                <p id="user" class="text-black me-4" style="width:200px; margin-left: 600px;"></p>   
+                            </li>
+                            <li class="nav-item " style="line-height:60px;">     
+                                    <button id="logout" type="submit" class="btn btn-danger me-4" asp-controller="Login" asp-action="Logout">Logout</button>
+                            </li>  
+                        </ul>
+
+    
+                    </div>
+                </div>
+            </nav>
+        </header>
+    </header>
+<div class="container">
+    <div class="form-group">
+        <label asp-for="PropertyId">Property ID:</label>
+        <input type="number" class="form-control" id="PropertyId" readonly />
+    </div>
+    <div class="form-group">
+        <label for="SellerpId">Seller ID:</label>
+        <input type="number" class="form-control" id="SellerpId" readonly />
+    </div>
+    <div class="form-group">
+        <label for="PName">Property Name:</label>
+        <input type="text" class="form-control" id="PName" readonly />
+    </div>
+    <div class="form-group">
+        <label for="Loc">Location:</label>
+        <input type="text" class="form-control" id="Loc"  readonly/>
+    </div>
+    
+    <div class="form-group">
+        <label for="Rnt_pd">Rent Per Day:</label>
+        <input type="number" class="form-control" id="Rnt_pd" readonly/>
+    </div>
+    
+    <div class="text-center panel-body">
+        <button type="submit" class="btn btn-sm btn-danger" id="UpdateButton" style="height: 50px;width: 100px;">Delete</button>
+    </div>
+</div>
+    
+    
+</body>
+
+<script>
+
+$(document).ready(function () {
+   
+    if(localStorage.getItem("LoggedIn")=="False")  
+    {
+        location.assign("WelcomeScreen.html");      
+    }
+    
+$("#user").html("Hi "+JSON.parse(localStorage.getItem("UserName"))+"!!!");  
+
+$("#logout").click(function(){
+   localStorage.setItem("LoggedIn","False");  
+   location.assign("WelcomeScreen.html");
+})
+
+
+    GetReservation();
+ 
+    function GetReservation() {
+        let params = (new URL(document.location)).searchParams;
+       // alert(params);
+        let id = params.get("id");
+       // alert(id);
+ 
+        $.ajax({
+            url: "https://localhost:5001/api/Seller/Details/prop_id="+id,
+            type: "get",
+            contentType: "application/json",
+            success: function (result, status, xhr) {
+                $("#PropertyId").val(result["propertyId"]);
+                $("#SellerpId").val(result["sellerpId"]);
+                $("#PName").val(result["pName"]);
+                $("#Loc").val(result["loc"]);
+                $("#Rnt_pd").val(result["rentPd"]);
+                console.log(result);
+            },
+            error: function (xhr, status, error) {
+                console.log(xhr)
+            }
+        });
+    };
+ 
+    $("#UpdateButton").click(function () {
+        
+        let params = (new URL(document.location)).searchParams;
+        let id = params.get("id");
+       // alert(id);
+
+        $.ajax({
+            url: "https://localhost:5001/api/Seller/DeleteYourProperty/prop_id="+id,
+            type: "delete",
+            contentType: "application/json",
+            success: function (result, status, xhr) {
+                location.assign("ShowProperties.html"); 
+            },
+            error: function (xhr, status, error) {
+               // alert(error);
+                console.log(xhr)
+            }
+        });
+       
+      
+    });
+});
+
+
+</script>
+
+
+</html>
